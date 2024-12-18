@@ -1,9 +1,13 @@
 import styles from './TasksList.module.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { deleteTasks } from '../http';
 
-export default function TasksList({ tasks }) {
+export default function TasksList({ tasks, onEdit }) {
   const [tasksState, setTasksState] = useState(tasks);
+
+  useEffect(() => {
+    setTasksState(tasks);
+  }, [tasks]);
 
   const handleChangeCheckbox = (id) => {
     setTasksState((prevState) =>
@@ -42,7 +46,11 @@ export default function TasksList({ tasks }) {
             {task.title}
           </span>
           <div>
-            <button type="button" className={styles.edit_button}>
+            <button
+              type="button"
+              className={styles.edit_button}
+              onClick={() => onEdit(task)}
+            >
               📝
             </button>
             <button

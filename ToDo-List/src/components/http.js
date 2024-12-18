@@ -48,3 +48,27 @@ export async function newTasks(value) {
     console.error(error.message);
   }
 }
+
+export async function updateTask(task) {
+  try {
+    const response = await fetch(
+      `https://easydev.club/api/v1/todos/${task.id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(task),
+      },
+    );
+    if (!response.ok) {
+      throw new Error('Задача не была обновлена');
+    }
+    console.log('Задача успешно обновлена');
+    const updatedTask = await response.json();
+    console.log('Обновленная задача:', updatedTask);
+    return updatedTask;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
