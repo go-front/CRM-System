@@ -1,15 +1,10 @@
 .checkbox {
    appearance: none;
    width: 15px;
-   /* Adjust size as needed */
    height: 15px;
-   /* Adjust size as needed */
    border-radius: 50%;
-   /* Make it circular */
    border: 1px solid #838282;
-   /* Border color */
    outline: none;
-   /* Remove default outline */
    cursor: pointer;
 }
 
@@ -22,11 +17,8 @@
    border-radius: 50%;
    text-align: center;
    line-height: 13.5px;
-   /* Центрирование галочки */
    color: white;
-   /* Цвет галочки */
    font-size: 12px;
-   /* Размер галочки */
 }
 
 
@@ -44,6 +36,7 @@
 
 .styles.task_text {
    text-align: left;
+   color: #000;
 }
 
 .task_style:hover {

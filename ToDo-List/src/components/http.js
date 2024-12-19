@@ -1,13 +1,24 @@
 const APP_STATE_URL = 'https://easydev.club/api/v1/todos';
 
-export async function fetchTasks() {
+export async function fetchTasks(status = 'all') {
   try {
-    const response = await fetch(`${APP_STATE_URL}`);
+    const response = await fetch(`${APP_STATE_URL}?filter=${status}`);
+    if (!response.ok) {
+      throw new Error(`Ошибка запроса: ${response.statusText}`);
+    }
     const resData = await response.json();
-    return resData.data;
+    console.log(resData);
+
+    return {
+      data: resData.data,
+      info: resData.info,
+    };
   } catch (error) {
     console.log('Обнаружена ошибка при загрузке данных');
-    return [];
+    return {
+      data: [],
+      info: null,
+    };
   }
 }
 
@@ -19,18 +30,7 @@ export async function fetchTasks() {
 //   } catch (error) {
 //     console.log('Обнаружена ошибка при загрузке данных');
 //     return [];
-//   }
-// }
 
-// export async function fetchStatus(task) {
-//   try {
-//     const response = await fetch(`${APP_STATE_URL}/${task.id}`);
-//     const resData = await response.json();
-//     return resData.isDone;
-//   } catch (error) {
-//     console.log('Не удалось статус задачи с сервера');
-//   }
-// }
 
 export async function deleteTasks(taskId) {
   try {

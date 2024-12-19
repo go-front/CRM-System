@@ -8,4 +8,9 @@
 .filter_button:hover {
    color: #35adf2;
    text-decoration: underline;
+   border: none;
+}
+
+.filter_button:focus {
+   outline: none;
 }

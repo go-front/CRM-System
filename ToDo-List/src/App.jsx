@@ -10,18 +10,25 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState();
+  const [filter, setFilter] = useState('all');
+  const [filterCounts, setFilterCounts] = useState({
+    all: 0,
+    completed: 0,
+    inWork: 0,
+  });
 
   useEffect(() => {
-    fetchTasks().then((data) => {
+    fetchTasks(filter).then(({ data, info }) => {
       setTasks(data);
+      setFilterCounts(info);
     });
-  }, []);
+  }, [filter]);
 
   const handleAddTask = async (taskTitle) => {
     try {
       const addedTask = await newTasks(taskTitle);
       console.log('Добавленная задача APP:', addedTask);
-      fetchTasks().then((data) => {
+      fetchTasks(filter).then((data) => {
         setTasks(data);
       });
     } catch (error) {
@@ -44,10 +51,19 @@ function App() {
     });
     setIsModalOpen(false);
   };
+
+  const handleFilterChanges = (newFilter) => {
+    if (filter !== newFilter) {
+      setFilter(newFilter);
+    }
+  };
   return (
     <>
       <TaskInput onAddTask={handleAddTask} />
-      <StateFilter />
+      <StateFilter
+        onFilterChange={handleFilterChanges}
+        filterCounts={filterCounts}
+      />
       {tasks.length > 0 ? (
         <TasksList tasks={tasks} onEdit={handleEditTask} />
       ) : (
