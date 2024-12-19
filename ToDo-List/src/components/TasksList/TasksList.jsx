@@ -36,10 +36,12 @@ export default function TasksList({ tasks, onEdit }) {
         <li key={task.id} className={styles.task_style}>
           <input
             type="checkbox"
+            id="checkbox"
             checked={task.isDone}
             onChange={() => handleChangeCheckbox(task.id)}
             className={styles.checkbox}
           />
+          <label htmlFor="checkbox"></label>
           <span
             className={`${task.isDone ? styles.complite : ''} ${styles.task_text}`}
           >
