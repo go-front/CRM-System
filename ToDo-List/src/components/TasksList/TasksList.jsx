@@ -19,8 +19,6 @@ export default function TasksList({ tasks, onEdit }) {
 
   const handleDeleteTask = (taskId) => {
     deleteTasks(taskId).then(() => {
-      console.log(taskId);
-
       setTasksState((prevState) =>
         prevState.filter((task) => task.id !== taskId),
       );

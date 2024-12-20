@@ -7,8 +7,6 @@ export async function fetchTasks(status = 'all') {
       throw new Error(`Ошибка запроса: ${response.statusText}`);
     }
     const resData = await response.json();
-    console.log(resData);
-
     return {
       data: resData.data,
       info: resData.info,
@@ -21,16 +19,6 @@ export async function fetchTasks(status = 'all') {
     };
   }
 }
-
-// export async function fetchTasks() {
-//   try {
-//     const response = await fetch(`${APP_STATE_URL}`);
-//     const resData = await response.json();
-//     return resData.data;
-//   } catch (error) {
-//     console.log('Обнаружена ошибка при загрузке данных');
-//     return [];
-
 
 export async function deleteTasks(taskId) {
   try {
@@ -60,9 +48,7 @@ export async function newTasks(value) {
     if (!response.ok) {
       throw new Error('Задача не была добавлена');
     }
-    console.log('Задача успешно добавлена');
     const addedTask = await response.json();
-    console.log('Добавленная задача:', addedTask);
     return addedTask;
   } catch (error) {
     console.error(error.message);
@@ -81,9 +67,7 @@ export async function updateTask(task) {
     if (!response.ok) {
       throw new Error('Задача не была обновлена');
     }
-    console.log('Задача успешно обновлена');
     const updatedTask = await response.json();
-    console.log('Обновленная задача:', updatedTask);
     return updatedTask;
   } catch (error) {
     console.error(error.message);

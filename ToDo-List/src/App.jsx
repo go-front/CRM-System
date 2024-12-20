@@ -27,7 +27,6 @@ function App() {
   const handleAddTask = async (taskTitle) => {
     try {
       const addedTask = await newTasks(taskTitle);
-      console.log('Добавленная задача APP:', addedTask);
       fetchTasks(filter).then((data) => {
         setTasks(data);
       });

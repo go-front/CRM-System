@@ -4,22 +4,6 @@ import styles from './TaskInput.module.css';
 export default function TaskInput({ onAddTask }) {
   const [inputTask, setInputTask] = useState('');
 
-  // const handleAddTask = () => {
-  //   if (inputTask.trim() === '') {
-  //     return;
-  //   }
-  //   try {
-  //     newTasks(inputTask).then(() => {
-  //       setTasks((prevState) => [
-  //         ...prevState,
-  //         { title: inputTask, isDone: false },
-  //       ]);
-  //     });
-  //     setInputTask('');
-  //   } catch (error) {
-  //     console.error('Ошибка при добавлении задачи:', error.message);
-  //   }
-  // };
   const handleAddTask = () => {
     if (inputTask.trim() === '') {
       return;
