@@ -1,27 +1,41 @@
 import styles from './TasksList.module.css';
 import { useState, useEffect } from 'react';
-import { deleteTasks } from '../http';
+import { deleteTasks, updateTask } from '../http';
 
-export default function TasksList({ tasks, onEdit }) {
+export default function TasksList({ tasks, onEdit, setFilterCounts }) {
   const [tasksState, setTasksState] = useState(tasks);
 
   useEffect(() => {
     setTasksState(tasks);
   }, [tasks]);
 
-  const handleChangeCheckbox = (id) => {
-    setTasksState((prevState) =>
-      prevState.map((task) =>
-        task.id === id ? { ...task, isDone: !task.isDone } : task,
-      ),
-    );
+  const handleChangeCheckbox = async (id) => {
+    const taskToUpdate = tasksState.find((task) => task.id === id);
+    if (!taskToUpdate) return;
+
+    const updatedTask = { ...taskToUpdate, isDone: !taskToUpdate.isDone };
+
+    try {
+      const updatedFromServer = await updateTask(updatedTask);
+
+      if (updatedFromServer) {
+        const updatedTasks = tasksState.map((task) =>
+          task.id === id ? updatedFromServer : task,
+        );
+
+        setTasksState(updatedTasks);
+        setFilterCounts(updatedTasks);
+      }
+    } catch (error) {
+      console.error('Ошибка при обновлении задачи:', error);
+    }
   };
 
   const handleDeleteTask = (taskId) => {
     deleteTasks(taskId).then(() => {
-      setTasksState((prevState) =>
-        prevState.filter((task) => task.id !== taskId),
-      );
+      const updatedTasks = tasksState.filter((task) => task.id !== taskId);
+      setTasksState(updatedTasks);
+      setFilterCounts(updatedTasks);
     });
   };
 
