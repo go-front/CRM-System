@@ -36,14 +36,14 @@ function App() {
     }
   };
 
-  const handleEditTask = (task) => {
-    if (!task) return;
-    setCurrentTask(task);
-    setIsModalOpen(true);
-    fetchTasks(filter).then(({ data, info }) => {
-      setTasks(data);
-    });
-  };
+  // const handleEditTask = (task) => {
+  //   if (!task) return;
+  //   setCurrentTask(task);
+  //   setIsModalOpen(true);
+  //   fetchTasks(filter).then(({ data, info }) => {
+  //     setTasks(data);
+  //   });
+  // };
   const handleSaveTask = (updatedTask) => {
     updateTask(updatedTask).then(() => {
       fetchTasks(filter).then(({ data, info }) => {
@@ -77,7 +77,6 @@ function App() {
         <TasksList
           setFilterCounts={setFilterCounts}
           tasks={tasks}
-          onEdit={handleEditTask}
           refreshTasks={() => {
             fetchTasks(filter).then(({ data, info }) => {
               setTasks(data);

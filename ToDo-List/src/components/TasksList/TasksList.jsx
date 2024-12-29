@@ -1,12 +1,11 @@
 import styles from './TasksList.module.css';
 import { deleteTasks, updateTask } from '../http';
+import { useState } from 'react';
 
-export default function TasksList({
-  tasks,
-  onEdit,
-  setFilterCounts,
-  refreshTasks,
-}) {
+export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editText, setEditText] = useState('');
+
   const handleChangeCheckbox = async (id) => {
     const taskToUpdate = tasks.find((task) => task.id === id);
     if (!taskToUpdate) return;
@@ -55,6 +54,33 @@ export default function TasksList({
     }
   };
 
+  const editTask = (task) => {
+    setEditingTaskId(task.id);
+    setEditText(task.title);
+  };
+
+  const handleSaveEdit = async (taskId) => {
+    if (!editText.trim()) {
+      alert('Текст задачи не может быть пустым!');
+      return;
+    }
+
+    const updatedTask = {
+      ...tasks.find((task) => task.id === taskId),
+      title: editText,
+    };
+    try {
+      const updatedFromServer = await updateTask(updatedTask);
+      if (updatedFromServer) {
+        setEditingTaskId(null);
+        setEditText('');
+        refreshTasks();
+      }
+    } catch (error) {
+      console.error('Ошибка при обновлении текста задачи:', error);
+    }
+  };
+
   if (!tasks || tasks.length === 0) {
     return <p>No tasks available</p>;
   }
@@ -70,27 +96,50 @@ export default function TasksList({
             className={styles.checkbox}
           />
           <label htmlFor={`checkbox-${task.id}`}></label>
-          <span
-            className={`${task.isDone ? styles.complite : ''} ${styles.task_text}`}
-          >
-            {task.title}
-          </span>
-          <div>
-            <button
-              type="button"
-              className={styles.edit_button}
-              onClick={() => onEdit(task)}
+          {editingTaskId === task.id ? (
+            <input
+              type="text"
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSaveEdit(task.id);
+              }}
+            />
+          ) : (
+            <span
+              className={`${task.isDone ? styles.complite : ''} ${styles.task_text}`}
             >
-              📝
-            </button>
-            <button
-              type="button"
-              className={styles.delete_button}
-              onClick={() => handleDeleteTask(task.id)}
-            >
-              🗑
-            </button>
-          </div>
+              {task.title}
+            </span>
+          )}
+          {editingTaskId === task.id ? (
+            <div>
+              <button
+                type="button"
+                className={styles.save_button}
+                onClick={() => handleSaveEdit(task.id)}
+              >
+                SAVE
+              </button>
+            </div>
+          ) : (
+            <div>
+              <button
+                type="button"
+                className={styles.edit_button}
+                onClick={() => editTask(task)}
+              >
+                📝
+              </button>
+              <button
+                type="button"
+                className={styles.delete_button}
+                onClick={() => handleDeleteTask(task.id)}
+              >
+                🗑
+              </button>
+            </div>
+          )}
         </li>
       ))}
     </ul>
