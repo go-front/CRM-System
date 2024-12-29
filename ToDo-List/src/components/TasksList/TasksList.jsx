@@ -28,11 +28,6 @@ export default function TasksList({
               : prevCounts.inWork + 1,
           };
         });
-        // const updatedTasks = tasks.map((task) =>
-        //   task.id === id ? updatedFromServer : task,
-        // );
-        // setTasksState(updatedTasks);
-        // setFilterCounts(updatedTasks);
       }
       refreshTasks();
     } catch (error) {

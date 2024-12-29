@@ -40,7 +40,6 @@ function App() {
     if (!task) return;
     setCurrentTask(task);
     setIsModalOpen(true);
-    // setFilterCounts(info);
     fetchTasks(filter).then(({ data, info }) => {
       setTasks(data);
     });
@@ -52,6 +51,7 @@ function App() {
         setFilterCounts(info);
       });
     });
+    // ЛОКАЛЬНОЕ ОБНОВЛЕНИЕ, МЕНЬШЕ НАГРУЗКИ НА СЕРВЕР
     //   setTasks((prevTasks) =>
     //     prevTasks.map((task) =>
     //       task.id === updatedTask.id ? updatedTask : task,
