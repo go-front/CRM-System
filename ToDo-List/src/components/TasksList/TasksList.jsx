@@ -1,16 +1,14 @@
 import styles from './TasksList.module.css';
-import { useState, useEffect } from 'react';
 import { deleteTasks, updateTask } from '../http';
 
-export default function TasksList({ tasks, onEdit, setFilterCounts }) {
-  const [tasksState, setTasksState] = useState(tasks);
-
-  useEffect(() => {
-    setTasksState(tasks);
-  }, [tasks]);
-
+export default function TasksList({
+  tasks,
+  onEdit,
+  setFilterCounts,
+  refreshTasks,
+}) {
   const handleChangeCheckbox = async (id) => {
-    const taskToUpdate = tasksState.find((task) => task.id === id);
+    const taskToUpdate = tasks.find((task) => task.id === id);
     if (!taskToUpdate) return;
 
     const updatedTask = { ...taskToUpdate, isDone: !taskToUpdate.isDone };
@@ -19,24 +17,47 @@ export default function TasksList({ tasks, onEdit, setFilterCounts }) {
       const updatedFromServer = await updateTask(updatedTask);
 
       if (updatedFromServer) {
-        const updatedTasks = tasksState.map((task) =>
-          task.id === id ? updatedFromServer : task,
-        );
-
-        setTasksState(updatedTasks);
-        setFilterCounts(updatedTasks);
+        setFilterCounts((prevCounts) => {
+          return {
+            ...prevCounts,
+            completed: updatedTask.isDone
+              ? prevCounts.completed + 1
+              : prevCounts.completed - 1,
+            inWork: updatedTask.isDone
+              ? prevCounts.inWork - 1
+              : prevCounts.inWork + 1,
+          };
+        });
+        // const updatedTasks = tasks.map((task) =>
+        //   task.id === id ? updatedFromServer : task,
+        // );
+        // setTasksState(updatedTasks);
+        // setFilterCounts(updatedTasks);
       }
+      refreshTasks();
     } catch (error) {
       console.error('Ошибка при обновлении задачи:', error);
     }
   };
 
-  const handleDeleteTask = (taskId) => {
-    deleteTasks(taskId).then(() => {
-      const updatedTasks = tasksState.filter((task) => task.id !== taskId);
-      setTasksState(updatedTasks);
-      setFilterCounts(updatedTasks);
-    });
+  const handleDeleteTask = async (taskId) => {
+    const taskToDelete = tasks.find((task) => task.id === taskId);
+    if (!taskToDelete) return;
+    try {
+      await deleteTasks(taskId);
+
+      setFilterCounts((prevCounts) => ({
+        ...prevCounts,
+        all: prevCounts.all - 1,
+        completed: taskToDelete.isDone
+          ? prevCounts.completed - 1
+          : prevCounts.completed,
+        inWork: taskToDelete.isDone ? prevCounts.inWork : prevCounts.inWork - 1,
+      }));
+      refreshTasks();
+    } catch (error) {
+      console.error('Ошибка при удалении задачи:', error);
+    }
   };
 
   if (!tasks || tasks.length === 0) {
@@ -44,16 +65,16 @@ export default function TasksList({ tasks, onEdit, setFilterCounts }) {
   }
   return (
     <ul>
-      {tasksState.map((task) => (
+      {tasks.map((task) => (
         <li key={task.id} className={styles.task_style}>
           <input
             type="checkbox"
-            id="checkbox"
+            id={`checkbox-${task.id}`}
             checked={task.isDone}
             onChange={() => handleChangeCheckbox(task.id)}
             className={styles.checkbox}
           />
-          <label htmlFor="checkbox"></label>
+          <label htmlFor={`checkbox-${task.id}`}></label>
           <span
             className={`${task.isDone ? styles.complite : ''} ${styles.task_text}`}
           >

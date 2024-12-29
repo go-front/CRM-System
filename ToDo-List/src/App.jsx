@@ -75,9 +75,15 @@ function App() {
       />
       {tasks.length > 0 ? (
         <TasksList
-          setFilterCounts={filterCounts}
+          setFilterCounts={setFilterCounts}
           tasks={tasks}
           onEdit={handleEditTask}
+          refreshTasks={() => {
+            fetchTasks(filter).then(({ data, info }) => {
+              setTasks(data);
+              setFilterCounts(info);
+            });
+          }}
         />
       ) : (
         <p>Loading tasks...</p>
