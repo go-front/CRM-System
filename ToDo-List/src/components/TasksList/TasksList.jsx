@@ -5,6 +5,7 @@ import { useState } from 'react';
 export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editText, setEditText] = useState('');
+  const [preEditing, setPreEditing] = useState(editText);
 
   const handleChangeCheckbox = async (id) => {
     const taskToUpdate = tasks.find((task) => task.id === id);
@@ -57,6 +58,7 @@ export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
   const editTask = (task) => {
     setEditingTaskId(task.id);
     setEditText(task.title);
+    setPreEditing(task.title);
   };
 
   const handleSaveEdit = async (taskId) => {
@@ -81,6 +83,19 @@ export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
     }
   };
 
+  const handleEditText = (e) => {
+    setEditText(e.target.value);
+  };
+  const handleKeyDown = (e, taskId) => {
+    if (e.key === 'Enter') {
+      handleSaveEdit(taskId);
+    }
+  };
+
+  const handleCancelEdit = (e) => {
+    setEditText(setPreEditing);
+    setEditingTaskId(null);
+  };
   if (!tasks || tasks.length === 0) {
     return <p>No tasks available</p>;
   }
@@ -100,9 +115,9 @@ export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
             <input
               type="text"
               value={editText}
-              onChange={(e) => setEditText(e.target.value)}
+              onChange={handleEditText}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSaveEdit(task.id);
+                handleKeyDown(e, task.id);
               }}
             />
           ) : (
@@ -120,6 +135,13 @@ export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
                 onClick={() => handleSaveEdit(task.id)}
               >
                 SAVE
+              </button>
+              <button
+                type="button"
+                className={styles.cancle_button}
+                onClick={(e) => handleCancelEdit()}
+              >
+                CANCEL
               </button>
             </div>
           ) : (

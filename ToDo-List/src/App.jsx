@@ -24,6 +24,12 @@ function App() {
     });
   }, [filter]);
 
+  const handleRefreshTasks = async () => {
+    const { data, info } = await fetchTasks(filter);
+    setTasks(data);
+    setFilterCounts(info);
+  };
+
   const handleAddTask = async (taskTitle) => {
     try {
       const addedTask = await newTasks(taskTitle);
@@ -35,15 +41,6 @@ function App() {
       console.error('Ошибка добавления задачи:', error);
     }
   };
-
-  // const handleEditTask = (task) => {
-  //   if (!task) return;
-  //   setCurrentTask(task);
-  //   setIsModalOpen(true);
-  //   fetchTasks(filter).then(({ data, info }) => {
-  //     setTasks(data);
-  //   });
-  // };
   const handleSaveTask = (updatedTask) => {
     updateTask(updatedTask).then(() => {
       fetchTasks(filter).then(({ data, info }) => {
@@ -77,12 +74,7 @@ function App() {
         <TasksList
           setFilterCounts={setFilterCounts}
           tasks={tasks}
-          refreshTasks={() => {
-            fetchTasks(filter).then(({ data, info }) => {
-              setTasks(data);
-              setFilterCounts(info);
-            });
-          }}
+          refreshTasks={() => handleRefreshTasks()}
         />
       ) : (
         <p>Loading tasks...</p>
