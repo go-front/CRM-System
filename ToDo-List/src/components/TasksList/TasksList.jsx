@@ -101,69 +101,72 @@ export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
   }
   return (
     <ul>
-      {tasks.map((task) => (
-        <li key={task.id} className={styles.task_style}>
-          <input
-            type="checkbox"
-            id={`checkbox-${task.id}`}
-            checked={task.isDone}
-            onChange={() => handleChangeCheckbox(task.id)}
-            className={styles.checkbox}
-          />
-          <label htmlFor={`checkbox-${task.id}`}></label>
-          {editingTaskId === task.id ? (
+      {tasks.map((task) => {
+        const isEditing = editingTaskId === task.id;
+        return (
+          <li key={task.id} className={styles.task_style}>
             <input
-              type="text"
-              value={editText}
-              onChange={handleEditText}
-              onKeyDown={(e) => {
-                handleKeyDown(e, task.id);
-              }}
+              type="checkbox"
+              id={`checkbox-${task.id}`}
+              checked={task.isDone}
+              onChange={() => handleChangeCheckbox(task.id)}
+              className={styles.checkbox}
             />
-          ) : (
-            <span
-              className={`${task.isDone ? styles.complite : ''} ${styles.task_text}`}
-            >
-              {task.title}
-            </span>
-          )}
-          {editingTaskId === task.id ? (
-            <div>
-              <button
-                type="button"
-                className={styles.save_button}
-                onClick={() => handleSaveEdit(task.id)}
+            <label htmlFor={`checkbox-${task.id}`}></label>
+            {isEditing ? (
+              <input
+                type="text"
+                value={editText}
+                onChange={handleEditText}
+                onKeyDown={(e) => {
+                  handleKeyDown(e, task.id);
+                }}
+              />
+            ) : (
+              <span
+                className={`${task.isDone ? styles.complite : ''} ${styles.task_text}`}
               >
-                SAVE
-              </button>
-              <button
-                type="button"
-                className={styles.cancle_button}
-                onClick={(e) => handleCancelEdit()}
-              >
-                CANCEL
-              </button>
-            </div>
-          ) : (
-            <div>
-              <button
-                type="button"
-                className={styles.edit_button}
-                onClick={() => editTask(task)}
-              >
-                📝
-              </button>
-              <button
-                type="button"
-                className={styles.delete_button}
-                onClick={() => handleDeleteTask(task.id)}
-              >
-                🗑
-              </button>
-            </div>
-          )}
-        </li>
-      ))}
+                {task.title}
+              </span>
+            )}
+            {isEditing ? (
+              <div>
+                <button
+                  type="button"
+                  className={styles.save_button}
+                  onClick={() => handleSaveEdit(task.id)}
+                >
+                  SAVE
+                </button>
+                <button
+                  type="button"
+                  className={styles.cancle_button}
+                  onClick={(e) => handleCancelEdit()}
+                >
+                  CANCEL
+                </button>
+              </div>
+            ) : (
+              <div>
+                <button
+                  type="button"
+                  className={styles.edit_button}
+                  onClick={() => editTask(task)}
+                >
+                  📝
+                </button>
+                <button
+                  type="button"
+                  className={styles.delete_button}
+                  onClick={() => handleDeleteTask(task.id)}
+                >
+                  🗑
+                </button>
+              </div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }
