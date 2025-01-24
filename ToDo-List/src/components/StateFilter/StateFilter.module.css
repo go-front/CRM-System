@@ -1,16 +1,16 @@
 .filter_button {
-   color: grey;
-   background: none;
-   border: none;
-   font-weight: bold;
+    color: grey;
+    background: none;
+    border: none;
+    font-weight: bold;
 }
 
 .filter_button:hover {
-   color: #35adf2;
-   text-decoration: underline;
-   border: none;
+    color: #35adf2;
+    text-decoration: underline;
+    border: none;
 }
 
 .filter_button:focus {
-   outline: none;
+    outline: none;
 }

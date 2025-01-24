@@ -1,13 +1,35 @@
-import styles from './TasksList.module.css';
-import { deleteTasks, updateTask } from '../http';
-import { useState } from 'react';
+import styles from "./TaskList.module.css";
+import { deleteTasks, updateTask } from "../../http";
+import { useState } from "react";
+import { IFilterCounts } from "../types/types";
 
-export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
-  const [editingTaskId, setEditingTaskId] = useState(null);
-  const [editText, setEditText] = useState('');
-  const [preEditing, setPreEditing] = useState(editText);
+type TTasks = ITask[];
+interface ITask {
+  id: number;
+  title: string;
+  value: string;
+  isDone: boolean;
+}
+type setFilterCounts = (target: IFilterCounts) => void;
+type refreshTasks = () => void;
 
-  const handleChangeCheckbox = async (id) => {
+interface ITasksListProps {
+  tasks: TTasks;
+  setFilterCounts: setFilterCounts;
+  refreshTasks: refreshTasks;
+}
+
+export default function TasksList({ tasks, refreshTasks }: ITasksListProps) {
+  const [editingTaskId, setEditingTaskId] = useState<null | number>(null);
+  const [editText, setEditText] = useState<null | string>("");
+  const [preEditing, setPreEditing] = useState<string | null>(editText);
+  const [, setFilterCounts] = useState<IFilterCounts>({
+    all: 0,
+    completed: 0,
+    inWork: 0,
+  });
+
+  const handleChangeCheckbox = async (id: number) => {
     const taskToUpdate = tasks.find((task) => task.id === id);
     if (!taskToUpdate) return;
 
@@ -31,11 +53,11 @@ export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
       }
       refreshTasks();
     } catch (error) {
-      console.error('Ошибка при обновлении задачи:', error);
+      console.error("Ошибка при обновлении задачи:", error);
     }
   };
 
-  const handleDeleteTask = async (taskId) => {
+  const handleDeleteTask = async (taskId: number) => {
     const taskToDelete = tasks.find((task) => task.id === taskId);
     if (!taskToDelete) return;
     try {
@@ -51,49 +73,58 @@ export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
       }));
       refreshTasks();
     } catch (error) {
-      console.error('Ошибка при удалении задачи:', error);
+      console.error("Ошибка при удалении задачи:", error);
     }
   };
 
-  const editTask = (task) => {
+  const editTask = (task: ITask) => {
     setEditingTaskId(task.id);
     setEditText(task.title);
     setPreEditing(task.title);
   };
-
-  const handleSaveEdit = async (taskId) => {
-    if (!editText.trim()) {
-      alert('Текст задачи не может быть пустым!');
+  const handleSaveEdit = async (taskId: number) => {
+    if (!editText?.trim()) {
+      alert("Текст задачи не может быть пустым!");
       return;
     }
 
-    const updatedTask = {
-      ...tasks.find((task) => task.id === taskId),
+    const taskToUpdate = tasks.find((task) => task.id === taskId);
+
+    if (!taskToUpdate) {
+      console.error("Задача не найдена");
+      return;
+    }
+    const updatedTask: ITask = {
+      ...taskToUpdate,
       title: editText,
     };
     try {
       const updatedFromServer = await updateTask(updatedTask);
+
       if (updatedFromServer) {
         setEditingTaskId(null);
-        setEditText('');
+        setEditText("");
         refreshTasks();
       }
     } catch (error) {
-      console.error('Ошибка при обновлении текста задачи:', error);
+      console.error("Ошибка при обновлении текста задачи:", error);
     }
   };
 
-  const handleEditText = (e) => {
+  const handleEditText = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditText(e.target.value);
   };
-  const handleKeyDown = (e, taskId) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    taskId: number
+  ) => {
+    if (e.key === "Enter") {
       handleSaveEdit(taskId);
     }
   };
 
-  const handleCancelEdit = (e) => {
-    setEditText(setPreEditing);
+  const handleCancelEdit = () => {
+    setEditText(preEditing);
     setEditingTaskId(null);
   };
   if (!tasks || tasks.length === 0) {
@@ -116,7 +147,7 @@ export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
             {isEditing ? (
               <input
                 type="text"
-                value={editText}
+                value={editText ?? ""}
                 onChange={handleEditText}
                 onKeyDown={(e) => {
                   handleKeyDown(e, task.id);
@@ -124,7 +155,9 @@ export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
               />
             ) : (
               <span
-                className={`${task.isDone ? styles.complite : ''} ${styles.task_text}`}
+                className={`${task.isDone ? styles.complite : ""} ${
+                  styles.task_text
+                }`}
               >
                 {task.title}
               </span>
@@ -141,7 +174,7 @@ export default function TasksList({ tasks, setFilterCounts, refreshTasks }) {
                 <button
                   type="button"
                   className={styles.cancle_button}
-                  onClick={(e) => handleCancelEdit()}
+                  onClick={handleCancelEdit}
                 >
                   CANCEL
                 </button>
