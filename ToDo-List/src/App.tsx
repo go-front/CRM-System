@@ -47,11 +47,7 @@ function App() {
       {isLoading ? (
         <p>Loading tasks...</p>
       ) : tasks.length > 0 ? (
-        <TasksList
-          setFilterCounts={setFilterCounts}
-          tasks={tasks}
-          refreshTasks={() => handleRefreshTasks()}
-        />
+        <TasksList tasks={tasks} refreshTasks={handleRefreshTasks} />
       ) : (
         <EmptyBox />
       )}
