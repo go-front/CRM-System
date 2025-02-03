@@ -1,26 +1,33 @@
-import { useState } from "react";
-import styles from "./TaskInput.module.css";
+import { useState } from 'react';
+import styles from './TaskInput.module.css';
+import { newTasks } from '../../http';
 
 type TProps = {
-  onAddTask: (target: string) => void;
+  onAddTask: () => void;
 };
 
 export default function TaskInput({ onAddTask }: TProps) {
-  const [inputTask, setInputTask] = useState<string>("");
+  const [inputTask, setInputTask] = useState<string>('');
 
-  const handleAddTask = () => {
+  const handleAddTask = async () => {
     if (
-      inputTask.trim() === "" ||
+      inputTask.trim() === '' ||
       inputTask.length < 2 ||
       inputTask.length > 64
     ) {
       alert(
-        "Введенный текст не соостветствует требованиям добавления задачи: поле не должно быть пустым, текст должен содержать от 2 до 64 символов. Повторите добавление задачи"
+        'Введенный текст не соостветствует требованиям добавления задачи: поле не должно быть пустым, текст должен содержать от 2 до 64 символов. Повторите добавление задачи',
       );
-      setInputTask("");
+      setInputTask('');
     } else {
-      onAddTask(inputTask);
-      setInputTask("");
+      try {
+        await newTasks(inputTask);
+        onAddTask();
+        setInputTask('');
+      } catch (error) {
+        console.error('Ошибка добавления задачи:', error);
+        alert('Не удалось добавить задачу. Пожалуйста, попробуйте снова.');
+      }
     }
   };
   return (

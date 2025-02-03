@@ -1,24 +1,48 @@
+import axios from 'axios';
+
 interface ITask {
   id: number;
   value: string;
   isDone: boolean;
 }
-const APP_STATE_URL = "https://easydev.club/api/v1/todos";
+const APP_STATE_URL = 'https://easydev.club/api/v1/todos';
 
-export async function fetchTasks(status = "all") {
+// export async function fetchTasks(status = 'all') {
+//   try {
+//     const response = await axios.get(`${APP_STATE_URL}?filter=${status}`);
+//     console.log(1);
+
+//     const resData = response.data;
+//     return {
+//       data: resData.data,
+//       info: resData.info,
+//     };
+//   } catch (error) {
+//     if (axios.isAxiosError(error)) {
+//       console.error('Ошибка: ', error.message);
+//     }
+//     return {
+//       data: [],
+//       info: null,
+//     };
+//   }
+// }
+
+export async function fetchTasks(status: string = 'all') {
   try {
-    const response = await fetch(`${APP_STATE_URL}?filter=${status}`);
-    if (!response.ok) {
-      throw new Error(`Ошибка запроса: ${response.statusText}`);
-    }
-    const resData = await response.json();
+    const response = await axios.get(`${APP_STATE_URL}?filter=${status}`);
+
+    const resData = await response.data;
     return {
       data: resData.data,
       info: resData.info,
     };
   } catch (error) {
-    const err = error as Error;
-    console.error("Ошибка: ", err.message);
+    if (axios.isAxiosError(error)) {
+      console.error('Ошибка при запросе:', error.message);
+    } else {
+      console.error('Неизвестная ошибка:', error);
+    }
     return {
       data: [],
       info: null,
@@ -28,56 +52,39 @@ export async function fetchTasks(status = "all") {
 
 export async function deleteTasks(taskId: number) {
   try {
-    const response = await fetch(`${APP_STATE_URL}/${taskId}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error("Проблема с сервером");
-    }
+    await axios.delete(`${APP_STATE_URL}/${taskId}`);
   } catch {
-    console.log("Не удаётся удалить задачу");
+    console.log('Не удаётся удалить задачу');
   }
 }
 
 export async function newTasks(value: string) {
   try {
-    if (value === "") {
-      throw new Error("Задача не введена");
+    if (value === '') {
+      throw new Error('Задача не введена');
     }
-    const response = await fetch(`${APP_STATE_URL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ title: value, isDone: false }),
-    });
-    if (!response.ok) {
-      throw new Error("Задача не была добавлена");
-    }
-    const addedTask = await response.json();
-    return addedTask;
+    const response = await axios.post(
+      `${APP_STATE_URL}`,
+      { title: value, isDone: false },
+      { headers: { 'Content-Type': 'application/json' } },
+    );
+    return response.data;
   } catch (error) {
     const err = error as Error;
-    console.error("Ошибка: ", err.message);
+    console.error('Ошибка: ', err.message);
   }
 }
 
 export async function updateTask(task: ITask) {
   try {
-    const response = await fetch(`${APP_STATE_URL}/${task.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(task),
-    });
-    if (!response.ok) {
-      throw new Error("Задача не была обновлена");
-    }
-    const updatedTask = await response.json();
-    return updatedTask;
+    const response = await axios.put(
+      `${APP_STATE_URL}/${task.id}`,
+      { body: task },
+      { headers: { 'Content-Type': 'application/json' } },
+    );
+    return response.data;
   } catch (error) {
     const err = error as Error;
-    console.error("Ошибка: ", err.message);
+    console.error('Ошибка: ', err.message);
   }
 }

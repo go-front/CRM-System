@@ -1,7 +1,7 @@
-import styles from "./TaskList.module.css";
-import { deleteTasks, updateTask } from "../../http";
-import { useState } from "react";
-import { IFilterCounts } from "../types/types";
+import styles from './TaskList.module.css';
+import { deleteTasks, updateTask } from '../../http';
+import { useState } from 'react';
+import { IFilterCounts } from '../types/types';
 
 type TTasks = ITask[];
 interface ITask {
@@ -21,7 +21,7 @@ interface ITasksListProps {
 
 export default function TasksList({ tasks, refreshTasks }: ITasksListProps) {
   const [editingTaskId, setEditingTaskId] = useState<null | number>(null);
-  const [editText, setEditText] = useState<null | string>("");
+  const [editText, setEditText] = useState<null | string>('');
   const [preEditing, setPreEditing] = useState<string | null>(editText);
   const [, setFilterCounts] = useState<IFilterCounts>({
     all: 0,
@@ -53,7 +53,7 @@ export default function TasksList({ tasks, refreshTasks }: ITasksListProps) {
       }
       refreshTasks();
     } catch (error) {
-      console.error("Ошибка при обновлении задачи:", error);
+      console.error('Ошибка при обновлении задачи:', error);
     }
   };
 
@@ -73,7 +73,7 @@ export default function TasksList({ tasks, refreshTasks }: ITasksListProps) {
       }));
       refreshTasks();
     } catch (error) {
-      console.error("Ошибка при удалении задачи:", error);
+      console.error('Ошибка при удалении задачи:', error);
     }
   };
 
@@ -84,14 +84,14 @@ export default function TasksList({ tasks, refreshTasks }: ITasksListProps) {
   };
   const handleSaveEdit = async (taskId: number) => {
     if (!editText?.trim()) {
-      alert("Текст задачи не может быть пустым!");
+      alert('Текст задачи не может быть пустым!');
       return;
     }
 
     const taskToUpdate = tasks.find((task) => task.id === taskId);
 
     if (!taskToUpdate) {
-      console.error("Задача не найдена");
+      console.error('Задача не найдена');
       return;
     }
     const updatedTask: ITask = {
@@ -103,11 +103,11 @@ export default function TasksList({ tasks, refreshTasks }: ITasksListProps) {
 
       if (updatedFromServer) {
         setEditingTaskId(null);
-        setEditText("");
+        setEditText('');
         refreshTasks();
       }
     } catch (error) {
-      console.error("Ошибка при обновлении текста задачи:", error);
+      console.error('Ошибка при обновлении текста задачи:', error);
     }
   };
 
@@ -116,9 +116,9 @@ export default function TasksList({ tasks, refreshTasks }: ITasksListProps) {
   };
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    taskId: number
+    taskId: number,
   ) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSaveEdit(taskId);
     }
   };
@@ -147,7 +147,7 @@ export default function TasksList({ tasks, refreshTasks }: ITasksListProps) {
             {isEditing ? (
               <input
                 type="text"
-                value={editText ?? ""}
+                value={editText ?? ''}
                 onChange={handleEditText}
                 onKeyDown={(e) => {
                   handleKeyDown(e, task.id);
@@ -155,7 +155,7 @@ export default function TasksList({ tasks, refreshTasks }: ITasksListProps) {
               />
             ) : (
               <span
-                className={`${task.isDone ? styles.complite : ""} ${
+                className={`${task.isDone ? styles.complite : ''} ${
                   styles.task_text
                 }`}
               >
